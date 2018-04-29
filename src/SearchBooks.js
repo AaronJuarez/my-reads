@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
+import './App.css'
 
 class SearchBooks extends Component {
 
@@ -10,6 +11,7 @@ class SearchBooks extends Component {
         <div className="search-books-bar">
           <Link
             to='/'
+            className='close-search'
           >Close</Link>
           <div className="search-books-input-wrapper">
             {/*
