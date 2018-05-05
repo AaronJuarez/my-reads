@@ -1,10 +1,43 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import './App.css'
+import ShelfList from './ShelfList'
 
 class SearchBooks extends Component {
 
+  state = {
+    query: '',
+    searchedBooks: []
+  }
+
+  updateQuery = (query) => {
+    this.props.searchBook(query).then((books) => {
+      books = books ? books.error ? [] : books : []
+      console.log(books)
+
+      books = books.map((book) => {
+        let shelf = this.props.booksMap.get(book.id)
+        if(shelf) {
+          book['shelf']=shelf
+        }else {
+          book['shelf']='none'
+        }
+        return book
+      })
+
+      this.setState(() => ({
+        searchedBooks: books
+      }))
+    })
+    this.setState(() => ({
+      query: query
+    }))
+  }
+
   render() {
+    const { query } = this.state
+    const { onShelfUpdate } = this.props
+
 
     return(
       <div className="search-books">
@@ -14,20 +47,22 @@ class SearchBooks extends Component {
             className='close-search'
           >Close</Link>
           <div className="search-books-input-wrapper">
-            {/*
-              NOTES: The search from BooksAPI is limited to a particular set of search terms.
-              You can find these search terms here:
-              https://github.com/udacity/reactnd-project-myreads-starter/blob/master/SEARCH_TERMS.md
-
-              However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
-              you don't find a specific author or title. Every search is limited by search terms.
-            */}
-            <input type="text" placeholder="Search by title or author"/>
+            <input
+              type="text"
+              placeholder="Search by title or author"
+              value={query}
+              onChange={(event) => this.updateQuery(event.target.value)}
+            />
 
           </div>
         </div>
         <div className="search-books-results">
-          <ol className="books-grid"></ol>
+          <ol className="books-grid">
+          <ShelfList
+            booksArray={this.state.searchedBooks}
+            onShelfUpdate={onShelfUpdate}
+          />
+          </ol>
         </div>
       </div>
     )

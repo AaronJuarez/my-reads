@@ -3,14 +3,19 @@ import React from 'react'
 const ShelfList = (props) => {
 
   return(
-    props.booksArray.map((book, index) => (
+    props.booksArray.map((book, index) => {
+      const url = book.imageLinks ? `url(${book.imageLinks.thumbnail})` : ''
+      console.log(book.shelf)
+
+      return (
+
       <li key={index}>
         <div className="book">
           <div className="book-top">
-            <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks.thumbnail})` }}></div>
+            <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: url }}></div>
             <div className="book-shelf-changer">
               <select value={book.shelf} onChange={(event) => props.onShelfUpdate(book, event.target.value)}>
-                <option value="none" disabled>Move to...</option>
+                <option value="" disabled>Move to...</option>
                 <option value="currentlyReading">Currently Reading</option>
                 <option value="wantToRead">Want to Read</option>
                 <option value="read">Read</option>
@@ -19,12 +24,12 @@ const ShelfList = (props) => {
             </div>
           </div>
           <div className="book-title">{book.title}</div>
-          {book.authors.map((author, index) => (
+          {book.authors ? book.authors.map((author, index) => (
             <div key={index} className="book-authors">{author}</div>
-          ))}
+          )): ''}
         </div>
       </li>
-    ))
+    )})
   )
 }
 

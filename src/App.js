@@ -7,7 +7,8 @@ import BooksShelf from './BooksShelf'
 
 class BooksApp extends React.Component {
   state = {
-    books: []
+    books: [],
+    booksMap: new Map()
   }
 
   updateBoook = (book, newShelf) => {
@@ -18,16 +19,36 @@ class BooksApp extends React.Component {
           BooksAPI.update(book, newShelf)
         }
         return b
-      })
+      }).filter((b) => (
+        b.shelf !== 'none'
+      ))
     }))
+  }
+
+  addBoook = (book, newShelf) => {
+    book['shelf'] = newShelf
+    console.log(book)
+    this.setState((currentState) => ({
+      books: currentState.booksMap.get(book.id) ? currentState.books : [...currentState.books, book]
+    }))
+    BooksAPI.update(book, newShelf)
   }
 
   componentDidMount() {
     BooksAPI.getAll()
       .then((books) => {
+
+        let newMap = new Map()
+        books.forEach((book) => {
+          newMap.set(book.id, book.shelf)
+        })
+
         this.setState(() => ({
-          books: books
+          books: books,
+          booksMap: newMap
         }))
+
+
         console.log(this.state);
       })
   }
@@ -45,7 +66,11 @@ class BooksApp extends React.Component {
         )} />
 
         <Route path='/search' render={() => (
-          <SearchBooks />
+          <SearchBooks
+            searchBook={BooksAPI.search}
+            onShelfUpdate={this.addBoook}
+            booksMap={this.state.booksMap}
+          />
         )} />
 
       </div>
